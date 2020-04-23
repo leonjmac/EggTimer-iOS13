@@ -13,7 +13,7 @@ import AVFoundation
 class ViewController: UIViewController {
     
     var areEggsBeingCooked = false
-    let eggCookingTimeDict = ["soft": 3, "medium": 4, "hard": 7]
+    let eggCookingTimeDict = ["soft": 300, "medium": 420, "hard": 720]
     var player: AVAudioPlayer!
     var timer: Timer!
     
@@ -23,6 +23,14 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        do {
+            let url = Bundle.main.url(forResource: "alarm_sound", withExtension: "mp3")
+            self.player = try AVAudioPlayer(contentsOf: url!)
+        } catch {
+            print("Hmmm... could not locate sound.")
+        }
+        
         self.cookingTimeProgress.layer.cornerRadius = 10.0
         self.cookingTimeProgress.clipsToBounds = true
         resetUI()
@@ -68,7 +76,7 @@ class ViewController: UIViewController {
             
             seconds -= 1
             if (seconds < sentinel) {
-                self.playAlarm()
+                self.player.play()
                 // Update UI
                 self.titleLabel.text = "Done! Who\'s next?"
                 self.areEggsBeingCooked.toggle()
@@ -77,15 +85,5 @@ class ViewController: UIViewController {
                 timer.invalidate()
             }
         })
-    }
-    
-    func playAlarm() {
-        do {
-            let url = Bundle.main.url(forResource: "alarm_sound", withExtension: "mp3")
-            self.player = try AVAudioPlayer(contentsOf: url!)
-            self.player.play()
-        } catch {
-            print("Hmmm... could not locate sound.")
-        }
     }
 }
